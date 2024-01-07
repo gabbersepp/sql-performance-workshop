@@ -21,7 +21,7 @@ Josef Biehler
 
 # Hinweis
 
-**Ich gehe von der Verwendung** von Entity Framework oder Ähnlichen Produkten aus, was den Einsatz von slebst geschriebenen SQL Queries reduziert und gewisse Einschränkungen mit sich bringt.
+**Ich gehe von der Verwendung** von Entity Framework oder Ähnlichen Produkten aus, was den Einsatz von selbst geschriebenen SQL Queries reduziert und gewisse Einschränkungen mit sich bringt.
 
 ---
 
@@ -83,6 +83,10 @@ FROM ::fn_trace_gettable('c:\test.trc', default)
 - Lock: Escalation
 - Lock: Timeout
 
+---
+
+# SQL Profiler - Wichtige Events
+
 **Stored Procedures**
 - RPC: Completed
 
@@ -108,6 +112,8 @@ FROM ::fn_trace_gettable('c:\test.trc', default)
 - von Rechts nach Links: Physikalischer Datenfluss
 - ich starte immer von Rechts
 - wird im Cache gespeichert
+
+---
 
 # Ausführungsplan
 
@@ -398,7 +404,7 @@ Und offensichtlich gibt es ja Parameterkombinationen, welche für den "schlechte
 
 **Wir wenden** jetzt unser Wissen an und werden mal ein paar Analyse starten. Das Ganze habe ich nicht vorbereitet, eventuell finden wir ja sogar noch was :-)
 
-...
+---
 
 # Periodische Indexanalyse
 
@@ -432,13 +438,6 @@ gruppieren, Anzahl Ausführungen, Reads, writes, Duration, etc
 Periodische Analyse: Rundumschlag
 Hier: Mehr im Detail arbeiten, auch Code anschauen
 -->
-
----
-
-# Exkurs: Woher kommt der Stacktrace?
-
-- EF Interceptor
-- Behandeln wir später noch
 
 ---
 
@@ -500,6 +499,8 @@ Nur Info:
 # Demo
 
 - `locks.sql` 1,2,3
+
+---
 
 # Lock Modus
 
