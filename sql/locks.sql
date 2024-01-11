@@ -187,45 +187,38 @@ delete from action where action = 'test'
 -- 14 Read Committed Snapshot 
 --------------------------------------------------------------------
 
--- execute this statement while not selecting the database in SQL Studio
-ALTER DATABASE AdventureWorks2017
-SET READ_COMMITTED_SNAPSHOT ON
+ALTER DATABASE AdventureWorks2017 SET SINGLE_USER WITH ROLLBACK immediate
+ALTER DATABASE AdventureWorks2017 SET READ_COMMITTED_SNAPSHOT ON
+ALTER DATABASE AdventureWorks2017 SET MULTI_USER WITH ROLLBACK immediate
 
 -- Session 1
-begin transaction
-set transaction isolation level read committed
-select * from HumanResources.Department where DepartmentID = 1
-
-select * from sys.dm_tran_locks -- Keine Locks!
-
--- Session 2
 begin transaction
 set transaction isolation level read committed
 update HumanResources.Department set Name = 'asdadada' where DepartmentID = 1
 
--- Session 1
--- Weiterhin vorheriger Wert
+-- Session 2
+begin transaction
+set transaction isolation level read committed
 select * from HumanResources.Department where DepartmentID = 1
 
--- Session 2
+-- Session 1
 commit
 
--- Session 1
+-- Session 2
 -- Neuer Wert
 select * from HumanResources.Department where DepartmentID = 1
 
-
-ALTER DATABASE AdventureWorks2017
-SET READ_COMMITTED_SNAPSHOT OFF
-
+ALTER DATABASE AdventureWorks2017 SET SINGLE_USER WITH ROLLBACK immediate
+ALTER DATABASE AdventureWorks2017 SET READ_COMMITTED_SNAPSHOT OFF
+ALTER DATABASE AdventureWorks2017 SET MULTI_USER WITH ROLLBACK immediate
 
 ------------------------------------------------------------------
--- 15 Read Committed Snapshot 
+-- 15 Snapshot 
 --------------------------------------------------------------------
 
--- execute this statement while not selecting the database in SQL Studio
-ALTER DATABASE AdventureWorks2017
-SET ALLOW_SNAPSHOT_ISOLATION ON
+ALTER DATABASE AdventureWorks2017 SET SINGLE_USER WITH ROLLBACK immediate
+ALTER DATABASE AdventureWorks2017 SET ALLOW_SNAPSHOT_ISOLATION ON
+ALTER DATABASE AdventureWorks2017 SET MULTI_USER WITH ROLLBACK immediate
 
 -- Session 1
 set transaction isolation level snapshot
@@ -250,18 +243,17 @@ commit
 -- Alter Wert
 select * from HumanResources.Department where DepartmentID = 1
 
-
-ALTER DATABASE AdventureWorks2017
-SET ALLOW_SNAPSHOT_ISOLATION OFF
-
+ALTER DATABASE AdventureWorks2017 SET SINGLE_USER WITH ROLLBACK immediate
+ALTER DATABASE AdventureWorks2017 SET ALLOW_SNAPSHOT_ISOLATION OFF
+ALTER DATABASE AdventureWorks2017 SET MULTI_USER WITH ROLLBACK immediate
 
 ------------------------------------------------------------------
 -- 16 Read Committed Snapshot - Nachteil - Fehler bei Konflikt
 --------------------------------------------------------------------
 
--- execute this statement while not selecting the database in SQL Studio
-ALTER DATABASE AdventureWorks2017
-SET ALLOW_SNAPSHOT_ISOLATION ON
+ALTER DATABASE AdventureWorks2017 SET SINGLE_USER WITH ROLLBACK immediate
+ALTER DATABASE AdventureWorks2017 SET ALLOW_SNAPSHOT_ISOLATION ON
+ALTER DATABASE AdventureWorks2017 SET MULTI_USER WITH ROLLBACK immediate
 
 -- Session 1
 set transaction isolation level snapshot
@@ -279,8 +271,9 @@ update HumanResources.Department set Name = 'session 2' where DepartmentID = 1
 -- Exception
 update HumanResources.Department set Name = 'session 1' where DepartmentID = 1
 
-ALTER DATABASE AdventureWorks2017
-SET ALLOW_SNAPSHOT_ISOLATION OFF
+ALTER DATABASE AdventureWorks2017 SET SINGLE_USER WITH ROLLBACK immediate
+ALTER DATABASE AdventureWorks2017 SET ALLOW_SNAPSHOT_ISOLATION OFF
+ALTER DATABASE AdventureWorks2017 SET MULTI_USER WITH ROLLBACK immediate
 
 
 ------------------------------------------------------------------

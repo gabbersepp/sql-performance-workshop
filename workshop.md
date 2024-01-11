@@ -1,5 +1,6 @@
 ---
 marp: true
+theme: default 
 ---
 
 # SQL Performance Workshop
@@ -24,6 +25,7 @@ Josef Biehler
 - Etwas BlaBla
 - Block 1: Index & Ausführungsplan
 - Block 2: Locks
+- Querydesign
 - Tipps für EntityFramework
 
 ---
@@ -87,6 +89,13 @@ FROM ::fn_trace_gettable('c:\test.trc', default)
 **TSQL**
 - SQL: BatchCompleted
 
+<!--
+
+Auf Live Trace starten, damit man am Ende was sieht
+Mit filter auf Duration (5s)
+
+-->
+
 ---
 
 # SQL Management Studio
@@ -121,13 +130,6 @@ z.b. stored procedure!
 - Predicate
 - was lädt der Operator?
 - Kosten
-
----
-
-# Ausführungsplan - Indexverwendung prüfen
-
-- Je passender der Index desto weniger Reads
-- Funktionen in `WHERE` und `JOIN` schlecht
 
 ---
 
@@ -684,6 +686,13 @@ Deadlock Priority erzeugt deterministisches Verhalten
 
 - EXISTS stoppt bei erstem Ergebnis
 - COUNT() muss alle zählen
+
+---
+
+# Wie man den SQL Optimizer zum Weinen bringt
+
+- Funktionen oder arithmetische Operationen in `WHERE` und `JOIN`
+- Demo: `optimizer-throws-up.sql`
 
 ---
 
