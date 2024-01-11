@@ -19,12 +19,6 @@ Josef Biehler
 
 ---
 
-# Hinweis
-
-**Ich gehe von der Verwendung** von Entity Framework oder Ähnlichen Produkten aus, was den Einsatz von selbst geschriebenen SQL Queries reduziert und gewisse Einschränkungen mit sich bringt.
-
----
-
 # Agenda
 
 - Etwas BlaBla
@@ -104,6 +98,11 @@ FROM ::fn_trace_gettable('c:\test.trc', default)
 - Query Statistiken
 - Demo
 
+<!--
+Wann reicht geschätzter nicht?
+z.b. stored procedure!
+-->
+
 ---
 
 # Ausführungsplan
@@ -122,14 +121,6 @@ FROM ::fn_trace_gettable('c:\test.trc', default)
 - Predicate
 - was lädt der Operator?
 - Kosten
-
----
-
-# Ausführungsplan - Pauschale Aussagen
-
-- Index Scan meist schlechter als Seek
-- Keylookup meistens schlecht
-- Sort ohne `ORDER BY` schlecht (aber oft nicht vermeidbar)
 
 ---
 
@@ -342,13 +333,6 @@ Und offensichtlich gibt es ja Parameterkombinationen, welche für den "schlechte
 
 ---
 
-# EXISTS statt COUNT(*)
-
-- EXISTS stoppt bei erstem Ergebnis
-- COUNT() muss alle zählen
-
----
-
 # Ausführungsplan - JOINs prüfen
 
 **Es gibt drei** `JOIN` Strategien:
@@ -397,12 +381,6 @@ Und offensichtlich gibt es ja Parameterkombinationen, welche für den "schlechte
 # JOINs Demo
 
 - `joins.sql`
-
----
-
-# DEMO 
-
-**Wir wenden** jetzt unser Wissen an und werden mal ein paar Analyse starten. Das Ganze habe ich nicht vorbereitet, eventuell finden wir ja sogar noch was :-)
 
 ---
 
@@ -687,12 +665,40 @@ Deadlock Priority erzeugt deterministisches Verhalten
 
 ---
 
+# Weitere Ursache: Querydesign
+
+---
+
+# Querydesign: Echtes Beispiel für Scancount
+
+- Indexseek kann schlecht sein, wenn viele Executions
+- Ggf kann aber Plan nicht anders gesteuert werden
+- dann: Query umbauen
+- `hd-scancount.sql`
+
+![](./img/hd-query.png)
+
+---
+
+# Querydesign: EXISTS statt COUNT(*)
+
+- EXISTS stoppt bei erstem Ergebnis
+- COUNT() muss alle zählen
+
+---
+
+# Kurzer Abschnitt zu EntityFramework
+
+---
+
 # Entity Framework
 
 - Beispielprojekt im Repo
 - Stacktrace mit im Query senden
 - Query modifizieren
 - Beispiel nur hingerotzt, bitte selber um geeignete Implementierung kümmern :-)
+
+---
 
 **Was machen wir noch:**
 - Spalten ausschließen, um Indices besser nutzen zu können

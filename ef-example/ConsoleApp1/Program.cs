@@ -9,7 +9,10 @@ public class Program
 
         using (var context = new ExampleContext(new RecompileInterceptor(), new QueryMarkerInterceptor()))
         {
-            var action = context.Actions.FirstOrDefault();
+            var action = context.Actions.First();
+
+            // Select *, aber es wird nur ein Property benutzt
+            Console.WriteLine(action.SystemAction);
         }
     }
 }
