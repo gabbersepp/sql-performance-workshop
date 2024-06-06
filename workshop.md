@@ -9,6 +9,10 @@ Josef Biehler
 
 ---
 
+![](./img/logo-blue.svg)
+
+---
+
 # Über mich
 
 - Seit 2011 bei der Samhammer AG als Fullstack Entwickler
