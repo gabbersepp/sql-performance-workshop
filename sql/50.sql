@@ -13,8 +13,3 @@ drop index IX_ActionId on Detail
 
 -- am Ende wieder
 create nonclustered index IX_ActionId on Detail(ActionId)
-
-
-
-nochmal testen, was passiert hier?
-nochmaltesten, ob man in hd daten schreiben ü lesen kann

@@ -248,7 +248,7 @@ ALTER DATABASE AdventureWorks2017 SET ALLOW_SNAPSHOT_ISOLATION OFF
 ALTER DATABASE AdventureWorks2017 SET MULTI_USER WITH ROLLBACK immediate
 
 ------------------------------------------------------------------
--- 16 Read Committed Snapshot - Nachteil - Fehler bei Konflikt
+-- 16 Snapshot - Nachteil - Fehler bei Konflikt
 --------------------------------------------------------------------
 
 ALTER DATABASE AdventureWorks2017 SET SINGLE_USER WITH ROLLBACK immediate
