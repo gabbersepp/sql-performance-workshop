@@ -705,6 +705,7 @@ Deadlock Priority erzeugt deterministisches Verhalten
 - Beispielprojekt im Repo
 - Stacktrace mit im Query senden
 - Query modifizieren
+- `SlowQueryInterceptor` spart Profiler
 - Beispiel nur hingerotzt, bitte selber um geeignete Implementierung kümmern :-)
 
 ---
