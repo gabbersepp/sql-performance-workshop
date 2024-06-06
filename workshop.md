@@ -15,10 +15,10 @@ Josef Biehler
 
 # Über mich
 
-- Seit 2011 bei der Samhammer AG als Fullstack Entwickler
-- biehler-josef.de
-- github.com/gabbersepp
-- dev.to/gabbersepp
+- Seit 2011 bei der `Samhammer AG` als Fullstack Entwickler
+- http://biehler-josef.de
+- http://github.com/gabbersepp
+- http://dev.to/gabbersepp
 - gabbersepp@googlemail.com
 - Workshop: https://github.com/gabbersepp/sql-performance-workshop
 
