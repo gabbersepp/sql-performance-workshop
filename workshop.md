@@ -24,120 +24,7 @@ Josef Biehler
 
 ---
 
-# Agenda
-
-- Etwas BlaBla
-- Block 1: Index & Ausführungsplan
-- Block 2: Locks
-- Querydesign
-- Tipps für EntityFramework
-
----
-
-# Praxisrelevante Ursachen
-
-- Schlechte Indices
-- veraltete Statistiken
-- schlecht gebaute Queries
-- schlechte Ausführungspläne
-- viel Blocking, Deadlocks
-- Probleme in App (guter Query wird unnötig häufig ausgeführt)
-- lang geblockte Ressourcen
-- ...
-
----
-
-# Wichtige Tools
-
-- SQL Profiler
-- SQL Management Studio
-
----
-
-# SQL Profiler
-
-- Demo
-
----
-
-# SQL Profiler - Trace Filtern
-
-- Abfrage der Daten per SQL möglich
-
-```
-SELECT *
-FROM ::fn_trace_gettable('c:\test.trc', default)
-```
-
----
-
-# SQL Profiler - Wichtige Events
-
-**Errors and Warnings**
-- Blocked Process Report
-
-**Locks**
-- Deadlock Graph
-- Lock: Deadlock
-- Lock: Deadlock Chain
-- Lock: Escalation
-- Lock: Timeout
-
----
-
-# SQL Profiler - Wichtige Events
-
-**Stored Procedures**
-- RPC: Completed
-
-**TSQL**
-- SQL: BatchCompleted
-
-<!--
-
-Auf Live Trace starten, damit man am Ende was sieht
-Mit filter auf Duration (5s)
-
--->
-
----
-
-# SQL Management Studio
-
-- Ausführungsplan anzeigen
-  - Geschätzter reicht oft auch
-  - besser ist aber tatsächlicher Plan
-- *Missing Index Hint* 
-- Query Statistiken
-- Demo
-
-<!--
-Wann reicht geschätzter nicht?
-z.b. stored procedure!
--->
-
----
-
-# Ausführungsplan
-
-- von Links nach Rechts: Logische Richtung
-- von Rechts nach Links: Physikalischer Datenfluss
-- ich starte immer von Rechts
-- wird im Cache gespeichert
-
----
-
-# Ausführungsplan
-
-- Pfeildicke
-- Daten im Operator
-- Predicate
-- was lädt der Operator?
-- Kosten
-
----
-
-# Ursache 1: Index im SQL Server & Ausführungsplan
+# Index im SQL Server & Ausführungsplan
 
 ---
 
@@ -164,45 +51,6 @@ z.b. stored procedure!
 **Ein Index erlaubt** SQL Server das Laden des kleineren Index (i.V. zu der Tabelle). Die Includespalten müssen dazu an die Spalten im `SELECT` angepasst werden.
 
 **Indices** erzeugen Overhead. Mit Kanonen auf Spatzen schießen hilft also nicht.
-
----
-
-# Covering Index
-
-- Index, welcher alle notwendigen Spalten beinhaltet
-- egal ob als Key- oder Includespalte
-- **Includespalte** bietet sich an, wenn die Spalte aufgrund des Datentyps keine Keyspalte sein kann
-- Breitere Indices erhöhen die Wartungskosten!
-
----
-
-# Index Join
-
-- Ein Index wäre zu breit
-- mehrere Indices können durch SQL Server benutzt werden
-- Mittels JOIN Operator werden beide zusammengeführt
-- Beispiel `60.sql`
-
-<!--
-Beispiel: Großere Kunde bei uns, Index rebuild dauert 30 minuten. 
-Dann lieber neuen Index mit der spalte, viel schneller
--->
-
----
-
-# Filtered Index
-
-- Index nur für bestimmte Menge der Daten
-- `CREATE NONCLUSTERED INDEX ... ON ... WHERE <predicate>`
-- Aber: Wird nicht benutzt bei parameterisierten Queries
-- Schwer steuerbar bei OR-Mapper
-- Beispiel: `70.sql`
-
----
-
-# Wann verwende ich Filtered Index
-
-- Manipulation des Queries mit EF Interceptor
 
 ---
 
@@ -268,13 +116,6 @@ Die 20% können dazu führen, dass Plan schlecht ist.
 
 ---
 
-# Informationen zum Ausführungsplan
-
-- Eigenschaften des `SELECT` Operators
-- CPU/Compilezeit
-
----
-
 # Parameter Sniffing
 
 - Optimizer "schaut" welche Werte die Parameter haben und nutzt diese für die Erzeugung des Plans
@@ -293,16 +134,6 @@ Die 20% können dazu führen, dass Plan schlecht ist.
 
 --- 
 
-# Neuen Ausführungsplan erzwingen
-
-- `DBCC FREEPROCCACHE`
-  - **Achtung:** löscht alle Pläne für alle Datenbanken! NICHT im Prod Betrieb ausführen!
-- `recompile`
-- `DBCC FREEPROCCACHE (handle)` löscht nur bestimmten Plan
-- Handle finden: `get-plan-handle-from-query-hash.sql`
-
----
-
 # Parameter Sniffing - Was tun?
 
 - `OPTION(RECOMPILE)` (EF: Interceptor)
@@ -315,117 +146,7 @@ Und offensichtlich gibt es ja Parameterkombinationen, welche für den "schlechte
 
 ---
 
-# Auswirkung Querydesign auf Indexverwendung
-
-- Nonsargable vs Sargable
-- Nonsargable Conditions erlauben keine Indexverwendung
-
-|Typ|Operatoren|
-|----|------------|
-|Sargeable|=,>,>=,<,<=, BETWEEN, manche LIKE|
-|Nonsargable|<>, !=, !>, !<, NOT EXISTS, NOT IN, NOT LIKE IN, OR, manche LIKE|
-
----
-
-# Non Sargeable - Weniger schlecht als man denkt
-
-- oft kann MS SQL Server den Query selber optimieren und macht aus einer Nonsargable eine Sargable Condition
-
----
-
-# (Non)Sargable Demo
-
-- `sargable.sql`
-
----
-
-# Ausführungsplan - JOINs prüfen
-
-**Es gibt drei** `JOIN` Strategien:
-- Hash
-- Loop
-- Merge
-
-**Es geht nicht darum** eine Startegie mit Hints zu erzwingen, sondern zu wissen, welche Strategie aufgrund der Datenmenge sinnvoll ist und zu prüfen, welcher Index fehlt, weswegen die falsche Strategie angewendet wird.
-
-**Veraltete Statistiken** können ebenfalls zur falschen `JOIN` Strategie führen.
-
----
-
-# Hash Join
-
-![](./img/hashjoin.png)
-
----
-
-# Hash Join
-
-**Ein Hash Join wird benutzt** für große, unsortierte Datenmengen ohne Index.
-
----
-
-# Loop Join
-
-**Wird benutzt**, wenn die Datenmengen sehr klein sind. Innere Tabelle muss jedoch auch indiziert sein
-
-**Falsche Statistiken** können auch bei großen Datenmengen zu Loop Joins führen
-
----
-
-# Merge Join
-
-**Merge Join erfordert**, dass die Join Kriterien beider Tabellen auch sortiert in Indices vorhanden sind.
-
----
-
-# JOINs Fazit
-
-**Ich würde JOINs** eher als Hinweis auf alte Statistiken sehen. Loop Join bei großen Datenmengen wäre zum Beispiel ein Alarmsignal.
-
----
-
-# JOINs Demo
-
-- `joins.sql`
-
----
-
-# Periodische Indexanalyse
-
-- siehe `index-analysis.sql`
-- geht nur auf Produktivdatenbank
-- Entfernen: 
-    - z.b. Indices mit hohen Kosten und geringen Verwendungen (prüfen: kritisch?)
-    - oder Indices ohne Verwendung
-- Aufpassen: `UNIQUE Index` kann auch nur existieren, um Eindeutigkeit sicherzustellen
-
----
-
-# Periodische Analyse lang laufender Queries
-
-- Ziel: Finden neuer, notwendiger Indices
-- Profiler laufen lassen, nach gewisser Zeit Queries gruppieren, Durchschnittswerte anschauen und Konsequenzen ziehen
-
-<!--
-Demo Tracefile mit SQL öffnen
-gruppieren, Anzahl Ausführungen, Reads, writes, Duration, etc
--->
-
----
-
-# Demoanalyse langsamer Query
-
-- Anders als bei der periodischen Analyse kann man sich hier mehr fokussieren
-- Mal auf gut Glück einen langsamen Query suchen im  System
-
-<!--
-Periodische Analyse: Rundumschlag
-Hier: Mehr im Detail arbeiten, auch Code anschauen
--->
-
----
-
-# Ursache 2: Locks
+# Locks
 
 ---
 
@@ -433,41 +154,6 @@ Hier: Mehr im Detail arbeiten, auch Code anschauen
 
 - Locks erzeugen Blockierung
 - Deadlocks
-
----
-
-# Locks
-
-- Locks prüfen: `select * from sys.dm_tran_locks`
-- Nachfolgend die häufigsten gelockten Ressourcen
-
----
-
-# Row (RID)
-
-- Tabelle hat keinen Clustered Index und eine Zeile wird modifiziert
-
-<!--
-Nur Info:
-- *Ressourcendarstellung*: **DatabaseID:FileID:PageID:Slot(row)**
-- *DatabaseID* steht in anderer Spalte
-- *FileID*: Primäre Datendatei 
-- *Object* EntityId mappen: **select OBJECT_NAME(1125579048)**
--->
-
----
-
-# Key Lock
-
-- Wenn Tabelle Clustered Index hat
-
-# Page-Level-Lock
-
-- SQL Server kann entscheiden, dass Pagelock effizienter ist als viele Key Locks
-
-# Object
-
-- Kann Tabelle sein oder auch was anderes
 
 ---
 
@@ -482,7 +168,7 @@ Nur Info:
 
 # Demo
 
-- `locks.sql` 1,2,3
+- `locks.sql`: Beispiel 3
 
 ---
 
@@ -505,39 +191,9 @@ Nur Info:
 - Andere nur lesende Querys können auch zugreifen
 - Modifizierende Querys nicht
 - i.d.R. wird Lock nur bis Abschluss der Leseoperation gehalten
-
----
-
-# Update (U) Mode
-
-- Daten lesen mit Intention zur Modifikation
-- Erst wenn Daten gelesen sind und klar ist, dass die Daten modifiziert werden, wird X Lock angefordert
-
-# Exclusive (X) Mode
-
-- Exklusiver Zugriff ist garantiert
-
----
-
-# Intended 
-
-- Bei X Lock auf Key wird z.B. IX Lock auf Page oder Tabelle gemacht
-- Schnellere Prüfung möglich, ob andere Session X Lock auf Page oder Tabelle erhalten kann
-
-# Range
-
-- nur anwendbar bei Serializable Isolation Level
-- verhindert einfügen neuer Zeilen innerhalb einer Range
-- gelockt wird einschließlich vorheriger Key bis ausschließlich nächster Key
-- Gut zu wissen: Cascade Delete erzwingt upgrade des Isolation Levels auf Serializable
-
----
-
-# Demo
-
-- `locks.sql` 4,5,6,7
-- Range Lock Thematik wird später gezeigt
-
+<!--
+Am interessantesten, da der S Lock für die Isolation Levels wichtig ist
+-->
 ---
 
 # Isolation Levels
@@ -604,21 +260,12 @@ Nur Info:
 
 - Arbeiten auf Kopie der Daten
 - Andere Transaktion kann Daten nicht lesen, auch wenn bereits Comit erfolgt
-- Nachteil siehe Demo
 
 ---
 
 # Demo
 
-- `locks.sql` 8,9,10,11,12,13,14,15,16
-
----
-
-# Rausfinden, was gelockt ist
-
-- `DBCC PAGE(<db-id>, <fileid>, <page>, 3)  with tableresults`
-- `select object_name(<object-id>)`
-- Demo: `locks.sql`: 17
+- `locks.sql` 14
 
 ---
 
@@ -659,7 +306,7 @@ Deadlock Priority erzeugt deterministisches Verhalten
 # Deadlocks - Analyse
 
 - Event: Deadlock Graph
-- Demo: `locks.sql`: 21, 22
+- Demo: `locks.sql`: 21
 
 ---
 
@@ -668,10 +315,6 @@ Deadlock Priority erzeugt deterministisches Verhalten
 - Event: Blocked Process Report
 - Wichtig: Muss aktiviert werden (und wieder deaktiviert)
 - Demo: `locks.sql`: 23
-
----
-
-# Weitere Ursache: Querydesign
 
 ---
 
@@ -686,21 +329,10 @@ Deadlock Priority erzeugt deterministisches Verhalten
 
 ---
 
-# Querydesign: EXISTS statt COUNT(*)
-
-- EXISTS stoppt bei erstem Ergebnis
-- COUNT() muss alle zählen
-
----
-
 # Wie man den SQL Optimizer zum Weinen bringt
 
 - Funktionen oder arithmetische Operationen in `WHERE` und `JOIN`
 - Demo: `optimizer-throws-up.sql`
-
----
-
-# Kurzer Abschnitt zu EntityFramework
 
 ---
 
@@ -711,18 +343,3 @@ Deadlock Priority erzeugt deterministisches Verhalten
 - Query modifizieren
 - `SlowQueryInterceptor` spart Profiler
 - Beispiel nur hingerotzt, bitte selber um geeignete Implementierung kümmern :-)
-
----
-
-**Was machen wir noch:**
-- Spalten ausschließen, um Indices besser nutzen zu können
-- Deadlockpriority setzen
-- ...
-
----
-
-# Ende - Tipps
-
-- Indices dokumentieren mit auslösendem Query
-- Bulk Insert erzeugt untrusted FKs
-- Bei Nutzung von OR-Mapper `select *` vermeiden
